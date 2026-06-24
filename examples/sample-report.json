@@ -1,0 +1,141 @@
+{
+  "generated_at": "2026-06-24 05:24 UTC",
+  "provider": "demo",
+  "client": "Northbeacon Analytics",
+  "competitors": [
+    "Quanta BI",
+    "Lumen Metrics",
+    "Datapeak"
+  ],
+  "prompts_audited": 5,
+  "summary": {
+    "Northbeacon Analytics": {
+      "share_of_voice": 0.4,
+      "appearances": 2,
+      "avg_rank": 1.5
+    },
+    "Quanta BI": {
+      "share_of_voice": 0.8,
+      "appearances": 4,
+      "avg_rank": 1.75
+    },
+    "Lumen Metrics": {
+      "share_of_voice": 1.0,
+      "appearances": 5,
+      "avg_rank": 2.0
+    },
+    "Datapeak": {
+      "share_of_voice": 0.8,
+      "appearances": 4,
+      "avg_rank": 2.5
+    }
+  },
+  "blind_spots": [
+    {
+      "prompt": "What are the best B2B product analytics platforms in 2026?",
+      "competitors_present": [
+        "Quanta BI",
+        "Lumen Metrics",
+        "Datapeak"
+      ]
+    },
+    {
+      "prompt": "Affordable analytics tools for early stage startups",
+      "competitors_present": [
+        "Datapeak",
+        "Lumen Metrics",
+        "Quanta BI"
+      ]
+    },
+    {
+      "prompt": "Enterprise grade product analytics vendors",
+      "competitors_present": [
+        "Quanta BI",
+        "Lumen Metrics",
+        "Datapeak"
+      ]
+    }
+  ],
+  "detail": [
+    {
+      "prompt": "What are the best B2B product analytics platforms in 2026?",
+      "answer": "The platforms that come up most often are Quanta BI, Lumen Metrics, and Datapeak. Each is strong for product analytics.",
+      "audit": {
+        "mentioned": [
+          "Quanta BI",
+          "Lumen Metrics",
+          "Datapeak"
+        ],
+        "position": {
+          "Quanta BI": 1,
+          "Lumen Metrics": 2,
+          "Datapeak": 3
+        }
+      }
+    },
+    {
+      "prompt": "Top tools for tracking SaaS activation and retention",
+      "answer": "Lumen Metrics and Northbeacon Analytics are both built around activation and retention funnels. Datapeak covers the basics.",
+      "audit": {
+        "mentioned": [
+          "Lumen Metrics",
+          "Northbeacon Analytics",
+          "Datapeak"
+        ],
+        "position": {
+          "Lumen Metrics": 1,
+          "Northbeacon Analytics": 2,
+          "Datapeak": 3
+        }
+      }
+    },
+    {
+      "prompt": "Affordable analytics tools for early stage startups",
+      "answer": "For lean teams, Datapeak and Lumen Metrics are the usual picks because both have free tiers. Quanta BI is also worth a look.",
+      "audit": {
+        "mentioned": [
+          "Datapeak",
+          "Lumen Metrics",
+          "Quanta BI"
+        ],
+        "position": {
+          "Datapeak": 1,
+          "Lumen Metrics": 2,
+          "Quanta BI": 3
+        }
+      }
+    },
+    {
+      "prompt": "Which product analytics platforms have the best AI insights?",
+      "answer": "Northbeacon Analytics leads here, its AI summaries are strong. Quanta BI and Lumen Metrics have added similar features recently.",
+      "audit": {
+        "mentioned": [
+          "Northbeacon Analytics",
+          "Quanta BI",
+          "Lumen Metrics"
+        ],
+        "position": {
+          "Northbeacon Analytics": 1,
+          "Quanta BI": 2,
+          "Lumen Metrics": 3
+        }
+      }
+    },
+    {
+      "prompt": "Enterprise grade product analytics vendors",
+      "answer": "Enterprise buyers tend to shortlist Quanta BI and Lumen Metrics, with Datapeak showing up for security focused teams.",
+      "audit": {
+        "mentioned": [
+          "Quanta BI",
+          "Lumen Metrics",
+          "Datapeak"
+        ],
+        "position": {
+          "Quanta BI": 1,
+          "Lumen Metrics": 2,
+          "Datapeak": 3
+        }
+      }
+    }
+  ]
+}
