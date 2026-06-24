@@ -1,0 +1,15 @@
+{
+  "client": "Northbeacon Analytics",
+  "competitors": ["Quanta BI", "Lumen Metrics", "Datapeak"],
+  "aliases": {
+    "Northbeacon Analytics": ["Northbeacon"]
+  },
+  "model": "",
+  "prompts": [
+    "What are the best B2B product analytics platforms in 2026?",
+    "Top tools for tracking SaaS activation and retention",
+    "Affordable analytics tools for early stage startups",
+    "Which product analytics platforms have the best AI insights?",
+    "Enterprise grade product analytics vendors"
+  ]
+}
