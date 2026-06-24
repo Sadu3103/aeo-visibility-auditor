@@ -1,0 +1,152 @@
+{
+  "name": "AEO Visibility Audit",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a1",
+      "name": "Run audit",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const client = 'Northbeacon Analytics';\nconst competitors = ['Quanta BI', 'Lumen Metrics', 'Datapeak'];\nconst aliases = { 'Northbeacon Analytics': ['Northbeacon'] };\nconst prompts = [\n  'What are the best B2B product analytics platforms in 2026?',\n  'Top tools for tracking SaaS activation and retention',\n  'Affordable analytics tools for early stage startups',\n  'Which product analytics platforms have the best AI insights?',\n  'Enterprise grade product analytics vendors'\n];\nreturn prompts.map(p => ({ json: { client, competitors, aliases, prompt: p } }));"
+      },
+      "id": "a2",
+      "name": "Build audit items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 600, messages: [ { role: 'user', content: $json.prompt } ] }) }}",
+        "options": {}
+      },
+      "id": "a3",
+      "name": "Ask AI assistant",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "Anthropic x-api-key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Runs once per prompt. Reads the AI answer and scores brand visibility.\nconst resp = $json;\nconst answer = Array.isArray(resp.content)\n  ? resp.content.map(b => b.text || '').join(' ')\n  : (resp.answer || resp.text || '');\nconst cfg = $('Build audit items').item.json;\nconst brands = [cfg.client, ...cfg.competitors];\nconst aliases = cfg.aliases || {};\nconst norm = ' ' + answer.toLowerCase().replace(/[^a-z0-9]+/g, ' ') + ' ';\nfunction firstIndex(brand) {\n  const names = [brand, ...((aliases[brand]) || [])];\n  let earliest = null;\n  for (const n of names) {\n    const key = ' ' + n.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() + ' ';\n    const idx = norm.indexOf(key);\n    if (idx !== -1 && (earliest === null || idx < earliest)) earliest = idx;\n  }\n  return earliest;\n}\nconst ranked = brands\n  .map(b => [firstIndex(b), b])\n  .filter(x => x[0] !== null)\n  .sort((a, b) => a[0] - b[0])\n  .map(x => x[1]);\nconst position = {};\nranked.forEach((b, i) => { position[b] = i + 1; });\nreturn { json: { prompt: cfg.prompt, client: cfg.client, competitors: cfg.competitors, answer, mentioned: ranked, position } };"
+      },
+      "id": "a4",
+      "name": "Score mentions",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Runs once over every prompt. Rolls up share of voice and blind spots.\nconst rows = $input.all().map(i => i.json);\nconst client = rows.length ? rows[0].client : '';\nconst competitors = rows.length ? rows[0].competitors : [];\nconst brands = [client, ...competitors];\nconst total = rows.length || 1;\nconst summary = {};\nfor (const b of brands) {\n  const present = rows.filter(r => r.position && r.position[b]);\n  const ranks = present.map(r => r.position[b]);\n  summary[b] = {\n    share_of_voice: Math.round((present.length / total) * 100) / 100,\n    appearances: present.length,\n    avg_rank: ranks.length ? Math.round((ranks.reduce((a, c) => a + c, 0) / ranks.length) * 100) / 100 : null\n  };\n}\nconst blind_spots = rows\n  .filter(r => (!r.position || !r.position[client]) && r.mentioned && r.mentioned.some(b => b !== client))\n  .map(r => ({ prompt: r.prompt, competitors_present: (r.mentioned || []).filter(b => b !== client) }));\nreturn [{ json: { client, competitors, prompts_audited: total, summary, blind_spots } }];"
+      },
+      "id": "a5",
+      "name": "Aggregate share of voice",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Run audit": {
+      "main": [
+        [
+          {
+            "node": "Build audit items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build audit items": {
+      "main": [
+        [
+          {
+            "node": "Ask AI assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask AI assistant": {
+      "main": [
+        [
+          {
+            "node": "Score mentions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score mentions": {
+      "main": [
+        [
+          {
+            "node": "Aggregate share of voice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "templatecredsSetupCompleted": false
+  },
+  "tags": []
+}
