@@ -149,14 +149,33 @@ def call_openai(prompt, model, api_key):
     return payload["choices"][0]["message"]["content"]
 
 
+def call_gemini(prompt, model, api_key):
+    model_id = model or "gemini-1.5-flash"
+    body = json.dumps({
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {"maxOutputTokens": 600},
+    }).encode("utf-8")
+    url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
+           f"{model_id}:generateContent?key={api_key}")
+    req = urllib.request.Request(
+        url,
+        data=body,
+        headers={"content-type": "application/json"},
+    )
+    with urllib.request.urlopen(req, timeout=60) as resp:
+        payload = json.loads(resp.read())
+    return payload["candidates"][0]["content"]["parts"][0]["text"]
+
+
 def get_answer(prompt, cfg, provider):
     if provider == "demo":
         return demo_answer(prompt, cfg)
-    key_env = "ANTHROPIC_API_KEY" if provider == "anthropic" else "OPENAI_API_KEY"
+    key_map = {"anthropic": "ANTHROPIC_API_KEY", "openai": "OPENAI_API_KEY", "gemini": "GEMINI_API_KEY"}
+    key_env = key_map[provider]
     api_key = os.environ.get(key_env)
     if not api_key:
         raise SystemExit(f"set {key_env} in the environment, or run with --demo")
-    caller = call_anthropic if provider == "anthropic" else call_openai
+    caller = {"anthropic": call_anthropic, "openai": call_openai, "gemini": call_gemini}[provider]
     return caller(prompt, cfg.get("model", ""), api_key)
 
 
@@ -226,7 +245,7 @@ def render_markdown(report):
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Audit AI answer visibility for a brand.")
     parser.add_argument("--config", default="config.example.json")
-    parser.add_argument("--provider", choices=["demo", "anthropic", "openai"], default="demo")
+    parser.add_argument("--provider", choices=["demo", "anthropic", "openai", "gemini"], default="demo")
     parser.add_argument("--demo", action="store_true", help="force offline demo mode")
     parser.add_argument("--out-dir", default="examples")
     parser.add_argument("--quiet", action="store_true")

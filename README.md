@@ -1,6 +1,6 @@
 # AEO Visibility Auditor
 
-Buyers now ask ChatGPT, Claude, Gemini, and Perplexity questions like "best B2B
+Buyers now ask ChatGPT, Gemini, Claude, and Perplexity questions like "best B2B
 product analytics platforms" before they ever land on a website. Answer Engine
 Optimization (AEO) is about whether your brand shows up in those answers. This
 tool measures it.
@@ -44,8 +44,10 @@ competitor shows up. Those three prompts are the audit's recommended priorities.
 Point it at a real model. Set a key and pick a provider:
 
 ```bash
-export ANTHROPIC_API_KEY=sk-...        # or OPENAI_API_KEY
+export ANTHROPIC_API_KEY=sk-...        # or OPENAI_API_KEY or GEMINI_API_KEY
 python3 src/audit.py --provider anthropic --config config.example.json
+python3 src/audit.py --provider gemini  --config config.example.json
+python3 src/audit.py --provider openai  --config config.example.json
 ```
 
 Edit `config.example.json` to audit your own brand:
